@@ -1,6 +1,6 @@
 ---
 const { title } = Astro.props;
-const images = ['IMG_6156.jpg', 'IMG_5762.png'];
+const images = ['IMG_6156.jpg', 'IMG_5762.jpg'];
 ---
 <!-- HTML comments supported! -->
 {/* JS comment syntax is also valid! */}
@@ -21,7 +21,7 @@ const images = ['IMG_6156.jpg', 'IMG_5762.png'];
             <!-- <div class="h-6"/>
             <h1 class="font-medium text-xl">@young_takes_photos</h2> -->
         </div>
-        <div class="grow overflow-y-auto overflow-x-hidden snap-y snap-mandatory overflow-y-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none] [-ms-overflow-style:none]">
+        <div class="grow overflow-y-auto overflow-x-hidden snap-y snap-mandatory overflow-y-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none] [-ms-overflow-style:none]" id="scroll-container">
             {images.map((item) => (
                 <section class="h-full w-full snap-start overflow-show pointer-events-none">
                     <img class="h-full w-full object-contain image-observer" src={"/images/"+item} alt={item} />
@@ -34,44 +34,55 @@ const images = ['IMG_6156.jpg', 'IMG_5762.png'];
 </div>
 
 <script type="module">
-    import * as exifr from "exifr";
+  import * as exifr from "https://unpkg.com/exifr/dist/lite.esm.js";
 
-    let targetElement = document.querySelectorAll('.image-observer');
-    const nameText = document.getElementById('name');
-    const cameraText = document.getElementById('camera');
-    const dateText = document.getElementById('date');
-    const lenseText = document.getElementById('lense');
-    const apertureText = document.getElementById('aperture');
-    const shutterText = document.getElementById('shutter');
-    const isoText = document.getElementById('iso');
+  const targets = document.querySelectorAll('.image-observer');
+  const scrollContainer = document.getElementById("scroll-container");
 
-    const options = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 1.0
-    };
+  const cameraText = document.getElementById('camera');
+  const dateText = document.getElementById('date');
+  const lensText = document.getElementById('lense');
+  const apertureText = document.getElementById('aperture');
+  const shutterText = document.getElementById('shutter');
+  const isoText = document.getElementById('iso');
 
-    const callback = (entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const buf = await fetch(entry.src).then(r => r.arrayBuffer());
-                const meta = await exifr.parse(buf);                
+  async function loadExif(img) {
+    const buf = await fetch(img.src).then(r => r.arrayBuffer());
+    const meta = await exifr.parse(buf);
 
-                if (nameText && cameraText && dateText && lenseText && apertureText && shutterText && isoText){
-                    cameraText.innerHTML = meta.Model ?? "—";
-                    dateText.innerHTML = meta.DateTimeOriginal ?? "—";
-                    lenseText.innerHTML = meta.FocalLength ?? "—";
-                    apertureText.innerHTML = meta.FNumber ??  "—";
-                    shutterText.innerHTML = meta.ExposureTime ?? "—";
-                    isoText.innerHTML = meta.ISO ?? "—";
-                }
-            }
-        });
-    };
+    if (!meta) return;
 
-    const observer = new IntersectionObserver(callback, options);
+    delete meta.GPSLatitude;
+    delete meta.GPSLongitude;
 
-    targetElement.forEach((item) => {
-        observer.observe(item);
-    });
+    if (cameraText) cameraText.textContent = meta.Model ?? "—";
+    if (dateText) dateText.textContent =
+      meta.DateTimeOriginal instanceof Date
+        ? meta.DateTimeOriginal.toLocaleDateString()
+        : "—";
+    if (lensText) lensText.textContent = (meta.FocalLength+"mm") ?? "—";
+    if (apertureText) apertureText.textContent =
+      meta.FNumber ? `f-${meta.FNumber}` : "—";
+    if (shutterText) shutterText.textContent =
+      meta.ExposureTime ? `1/${Math.round(1 / meta.ExposureTime)}s` : "—";
+    if (isoText) isoText.textContent = ("ISO " +meta.ISO) ?? "—";
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+            console.log("intersect change")
+            loadExif(entry.target);
+        }
+      }
+    },
+    { 
+        threshold: 0.6,
+        root: scrollContainer,
+    }
+  );
+
+  targets.forEach(el => observer.observe(el));
+
 </script>
