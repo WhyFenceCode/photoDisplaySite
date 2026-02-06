@@ -1,6 +1,6 @@
 ---
 const { title } = Astro.props;
-const images = ['IMG_6156.jpg', 'IMG_5762.jpg'];
+const images = ['Ferrari_308_GTSi:IMG_6156.jpg', 'Frosty_Porsche_Logo:IMG_5762.jpg']; //Must be JPG for exif reasons
 ---
 
 <div class="hidden md:block h-dvh w-dvw pl-16 pr-8 py-16 overflow-hidden">
@@ -37,6 +37,7 @@ const images = ['IMG_6156.jpg', 'IMG_5762.jpg'];
   const targets = document.querySelectorAll('.image-observer');
   const scrollContainer = document.getElementById("scroll-container");
 
+  const nameText = document.getElementById('name');
   const cameraText = document.getElementById('camera');
   const dateText = document.getElementById('date');
   const lensText = document.getElementById('lense');
@@ -53,6 +54,9 @@ const images = ['IMG_6156.jpg', 'IMG_5762.jpg'];
     delete meta.GPSLatitude;
     delete meta.GPSLongitude;
 
+    if (nameText) {
+        nameText.textContent = img.src.split("/")[img.src.split("/").length-1].split(":")[0].replaceAll("_", " ");
+    }
     if (cameraText) cameraText.textContent = meta.Model ?? "—";
     if (dateText) dateText.textContent =
       meta.DateTimeOriginal instanceof Date
