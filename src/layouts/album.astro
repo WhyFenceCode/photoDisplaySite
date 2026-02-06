@@ -1,8 +1,6 @@
 ---
 const { title } = Astro.props;
 const images = ['IMG_6156.jpg', 'IMG_5762.png'];
-const imagesMeta = [];
-
 ---
 <!-- HTML comments supported! -->
 {/* JS comment syntax is also valid! */}
@@ -12,21 +10,21 @@ const imagesMeta = [];
         <div class="h-full flex flex-col mr-16">
             <h1 class="line-through font-extrabold italic tracking-[-0.15em] text-5xl">Y.O.U.N.G.</h1>
             <div class="grow"/>
-            <h2 class="font-medium text-xl">Ferrari 308 GTSi</h2>
-            <h2 class="font-thin text-xl">Canon EOS Rebel t2i</h2>
-            <h2 class="font-thin text-xl">2 / 4 / 2026</h2>
+            <h2 class="font-medium text-xl" id="name">Ferrari 308 GTSi</h2>
+            <h2 class="font-thin text-xl" id="camera">Canon EOS Rebel t2i</h2>
+            <h2 class="font-thin text-xl" id="date">2 / 4 / 2026</h2>
             <div class="h-6"/>
-            <h3 class="font-thin text-xl">28mm</h2>
-            <h3 class="font-thin text-xl">f5</h2>
-            <h3 class="font-thin text-xl">1/125s</h2>
-            <h3 class="font-thin text-xl">ISO 100</h2>
+            <h3 class="font-thin text-xl" id="lense">28mm</h2>
+            <h3 class="font-thin text-xl" id="aperture">f5</h2>
+            <h3 class="font-thin text-xl" id="shutter">1/125s</h2>
+            <h3 class="font-thin text-xl" id="iso">ISO 100</h2>
             <!-- <div class="h-6"/>
             <h1 class="font-medium text-xl">@young_takes_photos</h2> -->
         </div>
         <div class="grow overflow-y-auto overflow-x-hidden snap-y snap-mandatory overflow-y-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none] [-ms-overflow-style:none]">
             {images.map((item) => (
                 <section class="h-full w-full snap-start overflow-show pointer-events-none">
-                    <img class="h-full w-full object-contain" src={"/images/"+item} alt={item} />
+                    <img class="h-full w-full object-contain image-observer" src={"/images/"+item} alt={item} />
                 </section>
                 <div class="h-16"/>
             ))}
@@ -34,3 +32,46 @@ const imagesMeta = [];
         <div></div>
     </div>
 </div>
+
+<script type="module">
+    import * as exifr from "exifr";
+
+    let targetElement = document.querySelectorAll('.image-observer');
+    const nameText = document.getElementById('name');
+    const cameraText = document.getElementById('camera');
+    const dateText = document.getElementById('date');
+    const lenseText = document.getElementById('lense');
+    const apertureText = document.getElementById('aperture');
+    const shutterText = document.getElementById('shutter');
+    const isoText = document.getElementById('iso');
+
+    const options = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 1.0
+    };
+
+    const callback = (entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const buf = await fetch(entry.src).then(r => r.arrayBuffer());
+                const meta = await exifr.parse(buf);                
+
+                if (nameText && cameraText && dateText && lenseText && apertureText && shutterText && isoText){
+                    cameraText.innerHTML = meta.Model ?? "—";
+                    dateText.innerHTML = meta.DateTimeOriginal ?? "—";
+                    lenseText.innerHTML = meta.FocalLength ?? "—";
+                    apertureText.innerHTML = meta.FNumber ??  "—";
+                    shutterText.innerHTML = meta.ExposureTime ?? "—";
+                    isoText.innerHTML = meta.ISO ?? "—";
+                }
+            }
+        });
+    };
+
+    const observer = new IntersectionObserver(callback, options);
+
+    targetElement.forEach((item) => {
+        observer.observe(item);
+    });
+</script>
