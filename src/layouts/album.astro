@@ -1,16 +1,14 @@
 ---
-import { Image } from 'astro:assets';
-
 const { title } = Astro.props;
-const images = ['IMG_6156.jpg'];
+const images = ['IMG_6156.jpg', 'IMG_5762.png'];
 
 ---
 <!-- HTML comments supported! -->
 {/* JS comment syntax is also valid! */}
 
 <div class="hidden md:block h-dvh w-dvw pl-16 pr-8 py-16 overflow-hidden">
-    <div class="w-full h-full flex flex-row gap-24">
-        <div class="h-full flex flex-col">
+    <div class="w-full h-full flex flex-row gap-16">
+        <div class="h-full flex flex-col mr-16">
             <h1 class="line-through font-extrabold italic tracking-[-0.15em] text-5xl">Y.O.U.N.G.</h1>
             <div class="grow"/>
             <h2 class="font-medium text-xl">Ferrari 308 GTSi</h2>
@@ -24,11 +22,12 @@ const images = ['IMG_6156.jpg'];
             <!-- <div class="h-6"/>
             <h1 class="font-medium text-xl">@young_takes_photos</h2> -->
         </div>
-        <div class="grow overflow-y-auto overflow-x-hidden snap-y snap-mandatory">
+        <div class="grow overflow-y-auto overflow-x-hidden snap-y snap-mandatory overflow-y-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none] [-ms-overflow-style:none]">
             {images.map((item) => (
-                <section class="h-full w-full snap-start">
+                <section class="h-full w-full snap-start overflow-show pointer-events-none">
                     <img class="h-full w-full object-contain" src={"/images/"+item} alt={item} />
                 </section>
+                <div class="h-16"/>
             ))}
         </div>
         <div></div>
