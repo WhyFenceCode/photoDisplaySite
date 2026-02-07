@@ -60,7 +60,7 @@ const images = ['IMG_6156.jpg', 'IMG_5762.jpg']; //Must be JPG for exif reasons
     delete meta.GPSLongitude;
 
     if (nameText) {
-        nameText.textContent = imageNames[img.src.split("/")[img.src.split("/").length-1].split("_")[1].split(".")[0]];
+        nameText.textContent = imageNames[img.src.split("/")[img.src.split("/").length-1].split("_")[1].split(".")[0]] ?? "Innominate work";
     }
     if (cameraText) cameraText.textContent = meta.Model ?? "—";
     if (dateText) dateText.textContent =
