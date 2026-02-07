@@ -1,12 +1,12 @@
 ---
 const { title } = Astro.props;
-const images = ['Ferrari_308_GTSi:IMG_6156.jpg', 'Frosty_Porsche_Logo:IMG_5762.jpg']; //Must be JPG for exif reasons
+const images = ['IMG_6156.jpg', 'IMG_5762.jpg']; //Must be JPG for exif reasons
 ---
 
 <div class="hidden md:block h-dvh w-dvw pl-16 pr-8 py-16 overflow-hidden">
     <div class="w-full h-full flex flex-row gap-16">
         <div class="h-full flex flex-col mr-16">
-            <h1 class="line-through font-extrabold italic tracking-[-0.15em] text-5xl">Y.O.U.N.G.</h1>
+            <h1 class="line-through font-extrabold italic tracking-[-0.15em] text-6xl">Y.O.U.N.G.</h1>
             <div class="grow"/>
             <h2 class="font-medium text-xl" id="name"></h2>
             <h2 class="font-thin text-xl" id="camera"></h2>
@@ -21,7 +21,7 @@ const images = ['Ferrari_308_GTSi:IMG_6156.jpg', 'Frosty_Porsche_Logo:IMG_5762.j
         </div>
         <div class="grow overflow-y-auto overflow-x-hidden snap-y snap-mandatory overflow-y-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none] [-ms-overflow-style:none]" id="scroll-container">
             {images.map((item) => (
-                <section class="h-full w-full snap-start overflow-show pointer-events-none">
+                <section class="h-full w-full snap-start overflow-show pointer-events-none select-none">
                     <img class="h-full w-full object-contain image-observer" src={"/images/"+item} alt={item} />
                 </section>
                 <div class="h-16"/>
@@ -32,6 +32,11 @@ const images = ['Ferrari_308_GTSi:IMG_6156.jpg', 'Frosty_Porsche_Logo:IMG_5762.j
 </div>
 
 <script type="module">
+    const imageNames = {
+        "6156" : "Ferrari 308 GTSi",
+        "5762" : "Frosted Porsche Logo"
+    }
+
   import * as exifr from "https://unpkg.com/exifr/dist/lite.esm.js";
 
   const targets = document.querySelectorAll('.image-observer');
@@ -55,7 +60,7 @@ const images = ['Ferrari_308_GTSi:IMG_6156.jpg', 'Frosty_Porsche_Logo:IMG_5762.j
     delete meta.GPSLongitude;
 
     if (nameText) {
-        nameText.textContent = img.src.split("/")[img.src.split("/").length-1].split(":")[0].replaceAll("_", " ");
+        nameText.textContent = imageNames[img.src.split("/")[img.src.split("/").length-1].split("_")[1].split(".")[0]];
     }
     if (cameraText) cameraText.textContent = meta.Model ?? "—";
     if (dateText) dateText.textContent =
