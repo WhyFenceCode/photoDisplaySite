@@ -1,6 +1,11 @@
 ---
 const { title } = Astro.props;
-const images = ['IMG_6156.jpg', 'IMG_5762.jpg']; //Must be JPG for exif reasons
+const randomize = true;
+const images = ['IMG_6156', 'IMG_6299', 'IMG_5537', 'IMG_5762', 'IMG_6344']; //Must be JPG for exif reasons
+const renderReadyImages = 
+  randomize
+  ? images.slice().sort(() => Math.random() - 0.5)
+  : images;
 ---
 
 <div class="hidden md:block h-dvh w-dvw pl-16 pr-8 py-16 overflow-hidden">
@@ -20,9 +25,9 @@ const images = ['IMG_6156.jpg', 'IMG_5762.jpg']; //Must be JPG for exif reasons
             <h1 class="font-medium text-xl">@young_takes_photos</h2> -->
         </div>
         <div class="grow overflow-y-auto overflow-x-hidden snap-y snap-mandatory overflow-y-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none] [-ms-overflow-style:none]" id="scroll-container">
-            {images.map((item) => (
+            {renderReadyImages.map((item) => (
                 <section class="h-full w-full snap-start overflow-show pointer-events-none select-none">
-                    <img class="h-full w-full object-contain image-observer" src={"/images/"+item} alt={item} />
+                    <img class="h-full w-full object-contain image-observer" src={"/images/"+item+".jpg"} alt={item} />
                 </section>
                 <div class="h-16"/>
             ))}
@@ -32,10 +37,10 @@ const images = ['IMG_6156.jpg', 'IMG_5762.jpg']; //Must be JPG for exif reasons
 </div>
 
 <script type="module">
-    const imageNames = {
-        "6156" : "Ferrari 308 GTSi",
-        "5762" : "Frosted Porsche Logo"
-    }
+  const imageNames = {
+    "6156" : "Ferrari 308 GTSi",
+    "5762" : "Frosted Porsche Logo"
+  }
 
   import * as exifr from "https://unpkg.com/exifr/dist/lite.esm.js";
 
