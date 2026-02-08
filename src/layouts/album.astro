@@ -1,7 +1,7 @@
 ---
 const { title } = Astro.props;
 const randomize = true;
-const images = ['IMG_6156', 'IMG_6299', 'IMG_5537', 'IMG_5762', 'IMG_6344']; //Must be JPG for exif reasons
+const images = ['IMG_6156', 'IMG_6512', 'IMG_6605', 'IMG_6299', 'IMG_5537', 'IMG_5762', 'IMG_6344']; //Must be JPG for exif reasons
 const renderReadyImages = 
   randomize
   ? images.slice().sort(() => Math.random() - 0.5)
@@ -42,6 +42,13 @@ const renderReadyImages =
     "5762" : "Frosted Porsche Logo"
   }
 
+  function formatExposure(t) {
+    if (t >= 1) return `${t}s`;
+
+    const denom = Math.round(1 / t);
+    return `1/${denom}s`;
+  }
+
   import * as exifr from "https://unpkg.com/exifr/dist/lite.esm.js";
 
   const targets = document.querySelectorAll('.image-observer');
@@ -73,10 +80,11 @@ const renderReadyImages =
         ? meta.DateTimeOriginal.toLocaleDateString()
         : "—";
     if (lensText) lensText.textContent = (meta.FocalLength+"mm") ?? "—";
-    if (apertureText) apertureText.textContent =
-      meta.FNumber ? `f-${meta.FNumber}` : "—";
-    if (shutterText) shutterText.textContent =
-      meta.ExposureTime ? `1/${Math.round(1 / meta.ExposureTime)}s` : "—";
+    if (apertureText) apertureText.textContent = meta.FNumber ? `f-${meta.FNumber}` : "—";
+    if (shutterText)
+      shutterText.textContent = meta.ExposureTime
+        ? formatExposure(meta.ExposureTime)
+        : "—";
     if (isoText) isoText.textContent = ("ISO " +meta.ISO) ?? "—";
   }
 
